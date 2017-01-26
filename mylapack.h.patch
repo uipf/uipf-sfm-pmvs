@@ -1,0 +1,18 @@
+5a6,14
+> // taken from f2c.h to make this compile on 32bit as well as 64bit systems
+> #if defined(__alpha__) || defined(__sparc64__) || defined(__x86_64__) || defined(__ia64__)
+> typedef int integer;
+> typedef unsigned int uinteger;
+> #else
+> typedef long int integer;
+> typedef unsigned long int uinteger;
+> #endif
+> 
+31c40
+<                   long int width, long int height);
+---
+>                   integer width, integer height);
+35c44
+<                   long int width, long int height);
+---
+>                   integer width, integer height);
