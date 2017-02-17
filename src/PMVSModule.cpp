@@ -45,7 +45,7 @@
 
 
 // TODO configure this path with cmake
-#define PMVS_BINARY "uipf-sfm-pmvs2"
+#define PMVS_BINARY "LC_ALL=C uipf-sfm-pmvs2"
 
 using namespace uipf;
 using namespace uipf::data;
