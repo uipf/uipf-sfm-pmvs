@@ -44,10 +44,15 @@ find_library(
 )
 message("ModuleBase: ${ModuleBase}")
 include_directories(${CMAKE_INSTALL_PREFIX}/include)
+find_library(
+	uipf-sfm uipf-sfm
+	PATHS ${CMAKE_INSTALL_PREFIX}/lib
+)
+message("uipf-sfm: ${uipf-sfm}")
 
 
 add_library(PMVSModule SHARED src/PMVSModule.cpp)
-target_link_libraries(PMVSModule ${ModuleBase})
+target_link_libraries(PMVSModule ${ModuleBase} ${uipf-sfm})
 add_dependencies(PMVSModule PMVS)
 
 # installation targets
