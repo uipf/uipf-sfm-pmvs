@@ -12,6 +12,7 @@
 #include <uipf-sfm/data/KeyPointList.hpp>
 #include <uipf-sfm/data/Image.hpp>
 #include <uipf-sfm/data/ImageGraph.hpp>
+#include <uipf-sfm/data/PointCloud.hpp>
 
 #define UIPF_MODULE_NAME "PMVS"
 #define UIPF_MODULE_ID "cebe.sfm.pmvs"
@@ -23,7 +24,7 @@
 		{"imageGraph", uipf::DataDescription(uipfsfm::data::ImageGraph::id(), "the image graph with matching image pairs.")}
 
 //#define UIPF_MODULE_OUTPUTS \
-//		{"imageGraph", uipf::DataDescription(uipfsfm::data::ImageGraph::id(), "the image graph with matching image pairs.")}
+		{"points", uipf::DataDescription(uipfsfm::data::PointCloud::id(), "dense reconstruction point cloud.")}
 
 // TODO workdir could be just a temporary directory
 #define UIPF_MODULE_PARAMS \
@@ -236,6 +237,8 @@ void PMVSModule::run() {
 		throw ErrorException("pmvs exited non-zero");
 	}
 
+	ifstream points((rootdir / fs::path("models") / fs::path("options.txt.ply")).string());
+	setOutputData<PointCloud>("points", new PointCloud(points));
 }
 
 
