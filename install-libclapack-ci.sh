@@ -50,7 +50,7 @@ sudo apt-get -y --no-install-recommends install $APTINSTALL libf2c2 libf2c2-dev 
 
 if [ "$PBUILDER" != "" ] ; then
 
-    echo "deb-src http://archive.ubuntu.com/ubuntu $(lsb_release -cs) main restricted universe multiverse" | sudo tee -a /etc/apt/sources.list
+    echo "deb-src http://archive.ubuntu.com/ubuntu yakkety main restricted universe multiverse" | sudo tee -a /etc/apt/sources.list
     sudo apt-get update
     apt-get source $PBUILDER
     sudo apt-get install pbuilder debootstrap devscripts
