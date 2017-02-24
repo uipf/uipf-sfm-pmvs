@@ -2,6 +2,8 @@
 
 # this version of install-libclapack.sh is used for building packages in CI environment.
 
+which sudo || apt-get -y install sudo
+
 APTINSTALL=
 if apt-cache pkgnames |grep libclapack-dev ; then
     APTINSTALL="${APTINSTALL} libclapack3"
