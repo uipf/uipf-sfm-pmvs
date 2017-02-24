@@ -52,11 +52,13 @@ if [ "$PBUILDER" != "" ] ; then
 
     echo "deb-src http://archive.ubuntu.com/ubuntu yakkety main restricted universe multiverse" | sudo tee -a /etc/apt/sources.list
     sudo apt-get update
+
     apt-get source $PBUILDER
-    sudo apt-get -y --no-install-recommends install pbuilder debootstrap devscripts
-    sudo pbuilder create --debootstrapopts --variant=buildd
-    sudo pbuilder build *.dsc
-    cp /var/cache/pbuilder/result/*.deb .
+    for pkg in $(find * -maxdepth 0 -type d) ; do
+        cd "$pkg"
+        dpkg-buildpackage -us -uc -b
+        cd ..
+    done
 
 fi
 
