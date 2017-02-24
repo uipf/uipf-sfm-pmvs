@@ -1,5 +1,5 @@
 before_script:
-  - sudo apt-get -y install libclapack-dev libf2c2-dev libblas-dev libgsl0-dev
+  - ./install-libclapack-ci.sh
 
 # TODO add ceres solver
 
@@ -26,7 +26,7 @@ find-uipf-sfm:
     - prefix/
 
 
-build-uipf-sfm-bundler:
+build-uipf-sfm-pmvs:
   tags:
     - nodocker
   stage: build
@@ -58,7 +58,7 @@ test:
     - ./prefix/bin/uipf -l
     # TODO grep for expected modules
   dependencies:
-  - build-uipf-sfm-bundler
+  - build-uipf-sfm-pmvs
 
 # TODO test a chain
 
@@ -70,7 +70,7 @@ test:
 #    - rsync -a prefix/ /tmp/uipf-sfm-prefix
 #    - find /tmp/uipf-sfm-prefix |sort
 #  dependencies:
-#    - build-uipf-sfm-bundler
+#    - build-uipf-sfm-pmvs
 
 
 variables:
