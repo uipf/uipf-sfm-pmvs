@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 
 # this version of install-libclapack.sh is used for building packages in CI environment.
 
@@ -27,6 +27,6 @@ else
     wget http://ftp.de.debian.org/debian/pool/main/l/lapack/libblas-common_3.7.0-1_amd64.deb
 fi
 
-apt-get -y --no-install-recommends install $APTINSTALL libf2c2 libf2c2-dev libgsl0-dev
+sudo apt-get -y --no-install-recommends install $APTINSTALL libf2c2 libf2c2-dev libgsl0-dev
 
-ls *.deb && dpkg -i *.deb || echo "ok"
+ls *.deb && sudo dpkg -i *.deb || echo "ok"

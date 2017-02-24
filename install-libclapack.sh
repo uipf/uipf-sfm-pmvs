@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 
 PACKAGES=""
 PACKAGES="$PACKAGES http://ftp.de.debian.org/debian/pool/main/c/clapack/libclapack-dev_3.2.1+dfsg-1_amd64.deb"
