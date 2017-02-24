@@ -4,6 +4,12 @@
 
 APTINSTALL=
 if apt-cache pkgnames |grep libclapack-dev ; then
+    APTINSTALL="${APTINSTALL} libclapack3"
+else
+    wget  http://ftp.de.debian.org/debian/pool/main/c/clapack/libclapack3_3.2.1+dfsg-1_amd64.deb
+fi
+
+if apt-cache pkgnames |grep libclapack-dev ; then
     APTINSTALL="${APTINSTALL} libclapack-dev"
 else
     wget http://ftp.de.debian.org/debian/pool/main/c/clapack/libclapack-dev_3.2.1+dfsg-1_amd64.deb
