@@ -124,5 +124,4 @@ fi
 
 echo "No special rules apply for your distribution, trying to install dependencies via apt-get..."
 
-$SUDO apt-get install libclapack-dev libf2c2-dev libgsl0-dev
-
+$SUDO apt-get -y --no-install-recommends install libclapack-dev libf2c2-dev libgsl0-dev
