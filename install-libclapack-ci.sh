@@ -73,6 +73,27 @@ export DEB_BUILD_MAINT_OPTIONS=hardening=+bindnow
 
 %:
 	dh \$@ --buildsystem=cmake
+
+override_dh_install:
+        dh_install
+#       d-shlibmove --commit \
+#                   --multiarch \
+#                   --devunversioned \
+#                   --override s/libf2clibf2c.so-dev/libf2c2-dev/ \
+#                   --movedev INCLUDE/blaswrap.h usr/include \
+#                   */BLAS/SRC/libcblas.so
+        d-shlibmove --commit \
+                    --multiarch \
+                    --devunversioned \
+                    --override s/libcblas3-dev/libcblas-dev/ \
+                    --movedev INCLUDE/clapack.h usr/include \
+                    */SRC/libclapack.so
+        d-shlibmove --commit \
+                    --multiarch \
+                    --devunversioned \
+                    */TESTING/MATGEN/libctmg.so
+        chrpath --delete debian/*/usr/lib/*/libclapack.so.*
+
 EOF
 
         dpkg-buildpackage -us -uc -b
@@ -86,6 +107,8 @@ EOF
     cd ..
 
 elif [ "$(lsb_release -is)" = "Debian" ] && [ "$(lsb_release -cs)" = "jessie" ] ; then
+
+    $SUDO apt-get -y --no-install-recommends install libf2c2-dev libgsl0-dev
 
     # fetch packages from stretch repo for jessie, seems to work fine
     wget http://ftp.de.debian.org/debian/pool/main/l/lapack/libblas-common_3.7.0-1_amd64.deb
