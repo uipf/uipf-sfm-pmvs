@@ -65,6 +65,7 @@ if [ "$PBUILDER" != "" ] ; then
             cd "$pkg"
             # patch debhelper dependency to be less strict
             sed -i 's/9\.20160114~/9/' debian/control
+            sed -i 's/dh_strip --dbgsym-migration.*/dh_strip/' debian/rules
             dpkg-buildpackage -us -uc -b
             cd ..
             cp $p*.deb ../..
