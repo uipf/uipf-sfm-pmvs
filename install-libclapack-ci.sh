@@ -2,78 +2,87 @@
 
 # this version of install-libclapack.sh is used for building packages in CI environment.
 
-which sudo || apt-get -y install sudo
+#
+# Debian 8
+# Ubuntu 14.04
+# Ubuntu 16.04
+# Ubuntu 16.10
+#
 
-APTINSTALL=
-PBUILDER=
-if apt-cache pkgnames |grep libblas-common ; then
-    APTINSTALL="${APTINSTALL} libblas-common"
-else
-    if [ "$(lsb_release -is)" = "Ubuntu" ] ; then
-        PBUILDER="${PBUILDER} libblas-common"
-    else
-        wget http://ftp.de.debian.org/debian/pool/main/l/lapack/libblas-common_3.7.0-1_amd64.deb
-    fi
-fi
+SUDO=$(which sudo || echo "")
 
-if apt-cache pkgnames |grep libcblas3 ; then
-    APTINSTALL="${APTINSTALL} libf2c2-dev libf2c2 libcblas3"
-else
-    if [ "$(lsb_release -is)" = "Ubuntu" ] ; then
-        PBUILDER="${PBUILDER} libf2c2-dev libf2c2 libcblas3"
-    else
-        wget http://ftp.de.debian.org/debian/pool/main/c/clapack/libcblas3_3.2.1+dfsg-1_amd64.deb
-    fi
-fi
+if [ "$(lsb_release -is)" = "Ubuntu" ] && [ "$(lsb_release -cs)" = "trusty" ] ; then
 
-if apt-cache pkgnames |grep libclapack-dev ; then
-    APTINSTALL="${APTINSTALL} libclapack3"
-else
-    if [ "$(lsb_release -is)" = "Ubuntu" ] ; then
-        PBUILDER="${PBUILDER} libclapack3"
-    else
-        wget  http://ftp.de.debian.org/debian/pool/main/c/clapack/libclapack3_3.2.1+dfsg-1_amd64.deb
-        # libf2c2 from packages should be fine on debian
-        APTINSTALL="${APTINSTALL} libf2c2-dev libf2c2"
-    fi
-fi
-
-if apt-cache pkgnames |grep libclapack-dev ; then
-    APTINSTALL="${APTINSTALL} libclapack-dev"
-else
-    if [ "$(lsb_release -is)" = "Ubuntu" ] ; then
-        PBUILDER="${PBUILDER} libclapack-dev"
-    else
-        wget http://ftp.de.debian.org/debian/pool/main/c/clapack/libclapack-dev_3.2.1+dfsg-1_amd64.deb
-    fi
-fi
-
-sudo apt-get -y --no-install-recommends install $APTINSTALL libgsl0-dev
-
-if [ "$PBUILDER" != "" ] ; then
+    # clapack is not available in trusty, backporting it from 16.10
 
     echo "deb-src http://archive.ubuntu.com/ubuntu yakkety main restricted universe multiverse" | sudo tee -a /etc/apt/sources.list
-    sudo apt-get update
+    $SUDO apt-get update
 
-    sudo apt-get -y --no-install-recommends install dpkg-dev debhelper cmake d-shlibs dh-exec chrpath gfortran python doxygen graphviz
+    $SUDO apt-get -y --no-install-recommends install dpkg-dev debhelper cmake d-shlibs dh-exec chrpath gfortran python doxygen graphviz libgsl0-dev
 
-    echo "$PBUILDER"
-    for p in $PBUILDER ; do
-        mkdir -p $p && cd $p
-        apt-get source $p
-        for pkg in $(find * -maxdepth 0 -type d) ; do
-            cd "$pkg"
-            # patch debhelper dependency to be less strict
-            sed -i 's/9\.20160114~/9/' debian/control
-            sed -i 's/dh_strip --dbgsym-migration.*/dh_strip/' debian/rules
-            dpkg-buildpackage -us -uc -b
-            cd ..
-            cp $p*.deb ../..
-            dpkg -i $p*.deb
-        done
+    # Package          Source Package
+    # libf2c2          libf2c2
+    # libf2c2-dev      libf2c2
+    # libblas-common   lapack
+    # libcblas3        clapack
+    # libclapack3      clapack
+    # libclapack-dev   clapack
+
+    mkdir -p libf2c2 && cd libf2c2
+    apt-get source libf2c2
+    for pkg in $(find * -maxdepth 0 -type d) ; do
+        cd "$pkg"
+        dpkg-buildpackage -us -uc -b
         cd ..
-    done
 
+        cp libf2c2*.deb ..
+        $SUDO dpkg -i libf2c2*.deb
+    done
+    cd ..
+
+    mkdir -p lapack && cd lapack
+    apt-get source lapack
+    for pkg in $(find * -maxdepth 0 -type d) ; do
+        cd "$pkg"
+        # patch debhelper dependency to be less strict
+        sed -i 's/9\.20160114~/9/' debian/control
+        sed -i 's/dh_strip --dbgsym-migration.*/dh_strip/' debian/rules
+        dpkg-buildpackage -us -uc -b
+        cd ..
+
+        cp libblas-common*.deb ..
+        $SUDO dpkg -i libblas-common*.deb
+    done
+    cd ..
+
+    mkdir -p clapack && cd clapack
+    apt-get source clapack
+    for pkg in $(find * -maxdepth 0 -type d) ; do
+        cd "$pkg"
+        dpkg-buildpackage -us -uc -b
+        cd ..
+
+        cp libcblas3*.deb ..
+        cp libclapack3*.deb ..
+        cp libclapack-dev*.deb ..
+        $SUDO dpkg -i libcblas3*.deb libclapack3*.deb libclapack-dev*.deb
+    done
+    cd ..
+
+elif ([ "$(lsb_release -is)" = "Debian" ] && [ "$(lsb_release -cs)" = "jessie" ]) || ([ "$(lsb_release -is)" = "Ubuntu" ] && [ "$(lsb_release -cs)" = " xenial" ]) ; then
+
+    # fetch packages from stretch repo for jessie, seems to work fine
+    wget http://ftp.de.debian.org/debian/pool/main/l/lapack/libblas-common_3.7.0-1_amd64.deb
+    wget http://ftp.de.debian.org/debian/pool/main/c/clapack/libcblas3_3.2.1+dfsg-1_amd64.deb
+    wget http://ftp.de.debian.org/debian/pool/main/c/clapack/libclapack3_3.2.1+dfsg-1_amd64.deb
+    wget http://ftp.de.debian.org/debian/pool/main/c/clapack/libclapack-dev_3.2.1+dfsg-1_amd64.deb
+
+    $SUDO dpkg -i *.deb || $SUDO apt-get install -f
+
+    exit $?
 fi
 
-ls *.deb && sudo dpkg -i *.deb || echo "ok"
+echo "No special rules apply for your distribution, trying to install dependencies via apt-get..."
+
+$SUDO apt-get install libclapack-dev libf2c2-dev libgsl0-dev
+
