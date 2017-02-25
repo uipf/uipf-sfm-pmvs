@@ -17,7 +17,7 @@ if [ "$(lsb_release -is)" = "Ubuntu" ] && ([ "$(lsb_release -cs)" = "trusty" ] |
 
     # clapack is not available in trusty, backporting it from 16.10
 
-    echo "deb-src http://archive.ubuntu.com/ubuntu yakkety main restricted universe multiverse" | sudo tee -a /etc/apt/sources.list
+    echo "deb-src http://archive.ubuntu.com/ubuntu yakkety main restricted universe multiverse" | $SUDO tee -a /etc/apt/sources.list
     $SUDO apt-get update
 
     $SUDO apt-get -y --no-install-recommends install dpkg-dev debhelper cmake d-shlibs dh-exec chrpath gfortran python doxygen graphviz libgsl0-dev
