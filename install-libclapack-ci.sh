@@ -75,25 +75,24 @@ export DEB_BUILD_MAINT_OPTIONS=hardening=+bindnow
 	dh \$@ --buildsystem=cmake
 
 override_dh_install:
-        dh_install
-#       d-shlibmove --commit \
-#                   --multiarch \
-#                   --devunversioned \
-#                   --override s/libf2clibf2c.so-dev/libf2c2-dev/ \
-#                   --movedev INCLUDE/blaswrap.h usr/include \
-#                   */BLAS/SRC/libcblas.so
-        d-shlibmove --commit \
-                    --multiarch \
-                    --devunversioned \
-                    --override s/libcblas3-dev/libcblas-dev/ \
-                    --movedev INCLUDE/clapack.h usr/include \
-                    */SRC/libclapack.so
-        d-shlibmove --commit \
-                    --multiarch \
-                    --devunversioned \
-                    */TESTING/MATGEN/libctmg.so
-        chrpath --delete debian/*/usr/lib/*/libclapack.so.*
-
+	dh_install
+	d-shlibmove --commit \
+			   --multiarch \
+			   --devunversioned \
+			   --override s/libf2clibf2c.so-dev/libf2c2/ \
+			   --movedev INCLUDE/blaswrap.h usr/include \
+			   */BLAS/SRC/libcblas.so
+	d-shlibmove --commit \
+				--multiarch \
+				--devunversioned \
+				--override s/libcblas3-dev/libcblas/ \
+				--movedev INCLUDE/clapack.h usr/include \
+				*/SRC/libclapack.so
+	d-shlibmove --commit \
+				--multiarch \
+				--devunversioned \
+				*/TESTING/MATGEN/libctmg.so
+	chrpath --delete debian/*/usr/lib/*/libclapack.so.*
 EOF
 
         dpkg-buildpackage -us -uc -b
