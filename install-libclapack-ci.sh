@@ -11,7 +11,7 @@
 
 SUDO=$(which sudo || echo "")
 
-if [ "$(lsb_release -is)" = "Ubuntu" ] && [ "$(lsb_release -cs)" = "trusty" ] ; then
+if [ "$(lsb_release -is)" = "Ubuntu" ] && ([ "$(lsb_release -cs)" = "trusty" ] || [ "$(lsb_release -cs)" = " xenial" ]) ; then
 
     # clapack is not available in trusty, backporting it from 16.10
 
@@ -40,25 +40,27 @@ if [ "$(lsb_release -is)" = "Ubuntu" ] && [ "$(lsb_release -cs)" = "trusty" ] ; 
     done
     cd ..
 
-    mkdir -p lapack && cd lapack
-    apt-get source lapack
-    for pkg in $(find * -maxdepth 0 -type d) ; do
-        cd "$pkg"
-        # patch debhelper dependency to be less strict
-        sed -i 's/9\.20160114~/9/' debian/control
-        sed -i 's/dh_strip --dbgsym-migration.*/dh_strip/' debian/rules
-        dpkg-buildpackage -us -uc -b
-        cd ..
-
-        cp libblas-common*.deb ..
-        $SUDO dpkg -i libblas-common*.deb
-    done
-    cd ..
+#    mkdir -p lapack && cd lapack
+#    apt-get source lapack
+#    for pkg in $(find * -maxdepth 0 -type d) ; do
+#        cd "$pkg"
+#        # patch debhelper dependency to be less strict
+#        sed -i 's/9\.20160114~/9/' debian/control
+#        sed -i 's/dh_strip --dbgsym-migration.*/dh_strip/' debian/rules
+#        dpkg-buildpackage -us -uc -b
+#        cd ..
+#
+#        cp libblas-common*.deb ..
+#        $SUDO dpkg -i libblas-common*.deb
+#    done
+#    cd ..
 
     mkdir -p clapack && cd clapack
     apt-get source clapack
     for pkg in $(find * -maxdepth 0 -type d) ; do
         cd "$pkg"
+        # skip dependecy on empty package
+        sed -i 's/, libblas-common//' debian/control
         dpkg-buildpackage -us -uc -b
         cd ..
 
@@ -69,7 +71,7 @@ if [ "$(lsb_release -is)" = "Ubuntu" ] && [ "$(lsb_release -cs)" = "trusty" ] ; 
     done
     cd ..
 
-elif ([ "$(lsb_release -is)" = "Debian" ] && [ "$(lsb_release -cs)" = "jessie" ]) || ([ "$(lsb_release -is)" = "Ubuntu" ] && [ "$(lsb_release -cs)" = " xenial" ]) ; then
+elif [ "$(lsb_release -is)" = "Debian" ] && [ "$(lsb_release -cs)" = "jessie" ] ; then
 
     # fetch packages from stretch repo for jessie, seems to work fine
     wget http://ftp.de.debian.org/debian/pool/main/l/lapack/libblas-common_3.7.0-1_amd64.deb
