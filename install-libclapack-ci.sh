@@ -63,8 +63,18 @@ if [ "$(lsb_release -is)" = "Ubuntu" ] && ([ "$(lsb_release -cs)" = "trusty" ] |
         cd "$pkg"
         # skip dependecy on empty package
         sed -i 's/, libblas-common//' debian/control
-        sed -e '/--override s\/libf/ s/^#*/#/' -i debian/rules
-        #sed -i 's~^(\\s+--override s/libf2clibf2c)~# \\1~' debian/rules
+        tee debian/rules << EOF
+#!/usr/bin/make -f
+
+export DEB_BUILD_HARDENING_FORMAT:=0
+DPKG_EXPORT_BUILDFLAGS = 1
+
+export DEB_BUILD_MAINT_OPTIONS=hardening=+bindnow
+
+%:
+	dh \$@ --buildsystem=cmake
+EOF
+
         dpkg-buildpackage -us -uc -b
         cd ..
 
