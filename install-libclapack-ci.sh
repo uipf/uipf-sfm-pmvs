@@ -7,12 +7,14 @@ which sudo || apt-get -y install sudo
 APTINSTALL=
 PBUILDER=
 if apt-cache pkgnames |grep libclapack-dev ; then
-    APTINSTALL="${APTINSTALL} libclapack3"
+    APTINSTALL="${APTINSTALL} libf2c2-dev libf2c2 libclapack3"
 else
     if [ "$(lsb_release -is)" = "Ubuntu" ] ; then
-        PBUILDER="${PBUILDER} libclapack3"
+        PBUILDER="${PBUILDER} libf2c2-dev libf2c2 libclapack3"
     else
         wget  http://ftp.de.debian.org/debian/pool/main/c/clapack/libclapack3_3.2.1+dfsg-1_amd64.deb
+        # libf2c2 from packages should be fine on debian
+        APTINSTALL="${APTINSTALL} libf2c2-dev libf2c2"
     fi
 fi
 
@@ -46,17 +48,27 @@ else
     fi
 fi
 
-sudo apt-get -y --no-install-recommends install $APTINSTALL libf2c2 libf2c2-dev libgsl0-dev
+
+sudo apt-get -y --no-install-recommends install $APTINSTALL libgsl0-dev
 
 if [ "$PBUILDER" != "" ] ; then
 
     echo "deb-src http://archive.ubuntu.com/ubuntu yakkety main restricted universe multiverse" | sudo tee -a /etc/apt/sources.list
     sudo apt-get update
 
-    apt-get source $PBUILDER
-    for pkg in $(find * -maxdepth 0 -type d) ; do
-        cd "$pkg"
-        dpkg-buildpackage -us -uc -b
+    sudo apt-get -y --no-install-recommends install dpkg-dev debhelper cmake d-shlibs dh-exec chrpath
+
+    echo "$PBUILDER"
+    for p in $PBUILDER ; do
+        mkdir -p $p && cd $p
+        apt-get source $p
+        for pkg in $(find * -maxdepth 0 -type d) ; do
+            cd "$pkg"
+            dpkg-buildpackage -us -uc -b
+            cd ..
+            cp *.deb ../..
+            dpkg -i *.deb
+        done
         cd ..
     done
 
