@@ -67,8 +67,8 @@ if [ "$PBUILDER" != "" ] ; then
             sed -i 's/9\.20160114~/9/' debian/control
             dpkg-buildpackage -us -uc -b
             cd ..
-            cp *.deb ../..
-            dpkg -i *.deb
+            cp $p*.deb ../..
+            dpkg -i $p*.deb
         done
         cd ..
     done
