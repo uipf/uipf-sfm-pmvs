@@ -13,7 +13,7 @@ SUDO=$(which sudo || echo "")
 
 $SUDO apt-get -y --no-install-recommends install lsb-release
 
-if [ "$(lsb_release -is)" = "Ubuntu" ] && ([ "$(lsb_release -cs)" = "trusty" ] || [ "$(lsb_release -cs)" = " xenial" ]) ; then
+if [ "$(lsb_release -is)" = "Ubuntu" ] && ([ "$(lsb_release -cs)" = "trusty" ] || [ "$(lsb_release -cs)" = "xenial" ]) ; then
 
     # clapack is not available in trusty, backporting it from 16.10
 
@@ -63,6 +63,8 @@ if [ "$(lsb_release -is)" = "Ubuntu" ] && ([ "$(lsb_release -cs)" = "trusty" ] |
         cd "$pkg"
         # skip dependecy on empty package
         sed -i 's/, libblas-common//' debian/control
+        sed -e '/--override s\/libf/ s/^#*/#/' -i debian/rules
+        #sed -i 's~^(\\s+--override s/libf2clibf2c)~# \\1~' debian/rules
         dpkg-buildpackage -us -uc -b
         cd ..
 
@@ -81,7 +83,7 @@ elif [ "$(lsb_release -is)" = "Debian" ] && [ "$(lsb_release -cs)" = "jessie" ] 
     wget http://ftp.de.debian.org/debian/pool/main/c/clapack/libclapack3_3.2.1+dfsg-1_amd64.deb
     wget http://ftp.de.debian.org/debian/pool/main/c/clapack/libclapack-dev_3.2.1+dfsg-1_amd64.deb
 
-    $SUDO dpkg -i *.deb || $SUDO apt-get install -f
+    $SUDO dpkg -i *.deb || $SUDO apt-get install -f -y
 
     exit $?
 fi
