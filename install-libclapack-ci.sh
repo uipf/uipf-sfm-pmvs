@@ -11,6 +11,8 @@
 
 SUDO=$(which sudo || echo "")
 
+$SUDO apt-get -y --no-install-recommends install lsb-release
+
 if [ "$(lsb_release -is)" = "Ubuntu" ] && ([ "$(lsb_release -cs)" = "trusty" ] || [ "$(lsb_release -cs)" = " xenial" ]) ; then
 
     # clapack is not available in trusty, backporting it from 16.10
