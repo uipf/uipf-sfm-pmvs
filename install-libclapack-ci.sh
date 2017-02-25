@@ -86,7 +86,8 @@ override_dh_install:
 	d-shlibmove --commit \
 				--multiarch \
 				--devunversioned \
-				--override s/libcblas3-dev/libcblas/ \
+				--override s/libcblas3-dev// \
+				--override s/libf2c2-dev// \
 				--movedev INCLUDE/clapack.h usr/include \
 				*/SRC/libclapack.so
 	d-shlibmove --commit \
