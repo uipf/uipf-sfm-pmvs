@@ -63,6 +63,8 @@ if [ "$PBUILDER" != "" ] ; then
         apt-get source $p
         for pkg in $(find * -maxdepth 0 -type d) ; do
             cd "$pkg"
+            # patch debhelper dependency to be less strict
+            sed -i 's/9\.20160114~/9/' debian/control
             dpkg-buildpackage -us -uc -b
             cd ..
             cp *.deb ../..
