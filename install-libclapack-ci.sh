@@ -80,6 +80,7 @@ override_dh_install:
 			   --multiarch \
 			   --devunversioned \
 			   --override s/libf2clibf2c.so-dev/libf2c2/ \
+			   --override s/libf2c2-dev// \
 			   --movedev INCLUDE/blaswrap.h usr/include \
 			   */BLAS/SRC/libcblas.so
 	d-shlibmove --commit \
