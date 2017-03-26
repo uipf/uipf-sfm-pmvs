@@ -23,7 +23,7 @@
 #define UIPF_MODULE_INPUTS \
 		{"imageGraph", uipf::DataDescription(uipfsfm::data::ImageGraph::id(), "the image graph with matching image pairs.")}
 
-//#define UIPF_MODULE_OUTPUTS \
+#define UIPF_MODULE_OUTPUTS \
 		{"points", uipf::DataDescription(uipfsfm::data::PointCloud::id(), "dense reconstruction point cloud.")}
 
 // TODO workdir could be just a temporary directory
